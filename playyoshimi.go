@@ -5,9 +5,10 @@ import (
 	"log"
 	"time"
 	"os/exec"
+	"os"
 )
 func main(){
-	fmt.Println("Hello world")
+	argsWithProg := os.Args
 	deviceConnected := false
 	for{
 		portmidi.Initialize()
@@ -43,8 +44,22 @@ func main(){
 		if devices >= 2{
 			if !deviceConnected {
 				fmt.Println("Call Yoshimi")
-				cmd := exec.Command("yoshimi")
-				cmd.Start()
+				if len(argsWithProg) > 1 {
+					fullcommand := os.Args[1:]
+					fmt.Println(argsWithProg)
+					fmt.Println(fullcommand)
+					if len(fullcommand) > 1 {
+						args := fullcommand[1:]
+						cmd := exec.Command(fullcommand[0], args...)
+						cmd.Start()
+					} else {	
+						cmd := exec.Command(fullcommand[0])
+						cmd.Start()
+					}
+				}else{
+					cmd := exec.Command("yoshimi");
+					cmd.Start()
+				}
 				deviceConnected = true
 			}
 		}else{

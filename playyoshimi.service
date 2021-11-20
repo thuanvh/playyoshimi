@@ -1,0 +1,11 @@
+[Unit]
+Description=Play yoshimi service
+
+[Service]
+User=root
+WorkingDirectory=/var/run/playyoshimi
+ExecStart=/var/run/playyoshimi/playyoshimi yoshimi --state /var/run/playyoshimi/1.state
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
