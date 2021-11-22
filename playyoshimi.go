@@ -2,7 +2,7 @@ package main
 import (
 	"fmt"
 	"github.com/rakyll/portmidi"
-	"log"
+	//"log"
 	"time"
 	"os/exec"
 	"os"
@@ -16,33 +16,36 @@ func main(){
 		fmt.Println("Device count = ", count)
 		// var deviceID = portmidi.DefaultInputDeviceID()
 		//fmt.Println("Device id = ", deviceID)
-		var deviceID portmidi.DeviceID
-		var devices int = 0
-		for deviceID = 0; int(deviceID) < count; deviceID++ {
-			var deviceInfo = portmidi.Info(deviceID)
-			if deviceInfo != nil && deviceInfo.IsInputAvailable {
-				fmt.Println("Device id ", deviceID, " is ", deviceInfo)
-				fmt.Println("Open device stream")
-				in, err := portmidi.NewInputStream(deviceID, 1024)
-				if err != nil {
-					log.Fatal(err)
-					fmt.Println("Error 1 ", err)
-				}
-				defer in.Close()
-				fmt.Println("Read stream")
-				events, err := in.Read(1024)
-				if err != nil {
-					log.Fatal(err)
-					fmt.Println("Error 2 ", err)
-					fmt.Println(events)
-				}
-				devices++
-			}
-		}
+		//var deviceID portmidi.DeviceID
+		var devices int = count
+		// for deviceID = 0; int(deviceID) < count; deviceID++ {
+		// 	var deviceInfo = portmidi.Info(deviceID)
+		// 	if deviceInfo != nil && deviceInfo.IsInputAvailable {
+		// 		fmt.Println("Device id ", deviceID, " is ", deviceInfo)
+		// 		fmt.Println("Open device stream")
+		// 		in, err := portmidi.NewInputStream(deviceID, 1024)
+		// 		if err != nil {
+		// 			log.Fatal(err)
+		// 			fmt.Println("Error 1 ", err)
+		// 		}
+		// 		defer in.Close()
+		// 		fmt.Println("Read stream")
+		// 		events, err := in.Read(1024)
+		// 		if err != nil {
+		// 			log.Fatal(err)
+		// 			fmt.Println("Error 2 ", err)
+		// 			fmt.Println(events)
+		// 		}
+		// 		devices++
+		// 	}
+		// }
 		portmidi.Terminate()
 
-		if devices >= 2{
+		if devices >= 4{
 			if !deviceConnected {
+				fmt.Println("Delete yoshimi")
+				cmd := exec.Command("killall", "yoshimi", "-9")
+				cmd.Run()
 				fmt.Println("Call Yoshimi")
 				if len(argsWithProg) > 1 {
 					fullcommand := os.Args[1:]
@@ -65,6 +68,16 @@ func main(){
 		}else{
 			if deviceConnected {
 				fmt.Println("Killall yoshimi")
+				// `echo "sudo_password" | sudo -S [command]`
+				// is used in order to run the command with `sudo`
+				
+				// _, err := exec.Command("sh", "-c", "echo '"+ sudopassword +"' | sudo -S pkill -SIGINT my_app_name").Output()
+
+				// if err != nil {
+				// 	// ...
+				// } else {
+				// 	// ...
+				// }
 				cmd := exec.Command("killall", "yoshimi", "-9")
 				cmd.Start()
 				deviceConnected = false
